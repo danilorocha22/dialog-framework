@@ -2,26 +2,23 @@ package com.danrocha.dialogframework.controllers;
 
 import com.danrocha.dialogframework.entities.Cliente;
 import com.danrocha.dialogframework.services.ClienteService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.primefaces.PrimeFaces;
+import org.primefaces.model.DialogFrameworkOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @Scope("view")
-@AllArgsConstructor
-@NoArgsConstructor
 public class SelecaoClienteController implements Serializable {
     @Serial private static final long serialVersionUID = 1L;
 
-    private ClienteService clienteService;
+    @Autowired
+    private transient ClienteService clienteService;
 
     private String nome;
 
@@ -43,19 +40,20 @@ public class SelecaoClienteController implements Serializable {
 
     /*Métodos*/
     public void abrirDialogModal() {
-        Map<String, Object> opcoes = new  HashMap<>();
-        opcoes.put("modal", true);
-        opcoes.put("resizable", false);
-        opcoes.put("contentHeight", 500);
-        PrimeFaces.current().dialog().openDynamic("SelecaoCliente", opcoes, null);
+        DialogFrameworkOptions opcoes = DialogFrameworkOptions.builder()
+                .modal(true)
+                .resizable(false)
+                .contentHeight("700")
+                .build();
+        PrimeFaces.current().dialog().openDynamic("pesquisa-cliente", opcoes, null);
     }
 
     public void selecionar(Cliente cliente) {
         PrimeFaces.current().dialog().closeDynamic(cliente);
     }
 
-    public void pesquisar(String nome) {
-        this.clientesFiltrados = this.clienteService.pesquisarClientesPeloNome(nome);
+    public void pesquisar() {
+        this.clientesFiltrados = this.clienteService.pesquisarClientesPeloNome(this.nome);
     }
 
 }
