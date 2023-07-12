@@ -34,7 +34,6 @@
 	</dependencyManagement>
 
 	<dependencies>
-
 		<!--Joinfaces-->
 		<dependency>
 			<groupId>org.joinfaces</groupId>
@@ -66,6 +65,13 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!--PrimeFlex-->
+		<dependency>
+			<groupId>org.webjars.npm</groupId>
+			<artifactId>primeflex</artifactId>
+			<version>3.2.0</version>
+		</dependency>
+
 		<!--Testes-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

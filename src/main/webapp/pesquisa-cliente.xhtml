@@ -6,19 +6,18 @@
 >
 <h:head>
     <meta charset="UTF-8"/>
-    <title>Pesquisa de Clientes</title>
-    <h:outputStylesheet library="style" name="estilo.css"/>
     <h:outputScript name="jquery/jquery-plugins.js" library="primefaces"/>
     <h:outputScript name="jquery/jquery.js" library="primefaces"/>
+    <title>Pesquisa de Clientes</title>
 </h:head>
 
 <h:body>
-    <h:form>
-        <div style="margin-top:5px; margin-bottom: 20px">
+    <h:form id="formCliente">
+        <p:outputPanel id="panelFormCliente" style="margin-top:5px; margin-bottom: 20px">
             <p:inputText id="nome" size="40" value="#{selecaoClienteController.nome}" placeholder="Nome do Cliente"/>
             <p:spacer width="10px"/>
             <p:commandButton value="Pesquisar" action="#{selecaoClienteController.pesquisar}" update="@form"/>
-        </div>
+        </p:outputPanel>
 
         <p:dataTable value="#{selecaoClienteController.clientesFiltrados}" var="cliente"
                      emptyMessage="Nenhum cliente encontrado." paginator="true" rows="10"
@@ -32,7 +31,8 @@
                 <h:outputText value="#{cliente.nome}"/>
             </p:column>
 
-            <p:column style="text-align: center; width: 25px">
+            <p:column style="text-align: center; width: 30px">
+
                 <p:commandButton icon="pi pi-check"  title="Selecionar"
                                  action="#{selecaoClienteController.selecionar(cliente)}"
                                  process="@this"/>

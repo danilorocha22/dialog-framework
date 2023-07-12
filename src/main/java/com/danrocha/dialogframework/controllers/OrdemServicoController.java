@@ -12,11 +12,14 @@ import org.springframework.stereotype.Controller;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
 
 @Controller
 @Scope("view")
 public class OrdemServicoController implements Serializable {
-    @Serial private static final long serialVersionUID = 1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Autowired
     private OrdemServicoService ordemService;
@@ -26,10 +29,16 @@ public class OrdemServicoController implements Serializable {
     @Autowired
     private FacesMessages messages;
 
+    private List<OrdemServico> ordens;
+
 
     /*Getters e Setters*/
     public OrdemServico getOrdemServico() {
         return ordemServico;
+    }
+
+    public void setOrdemService(OrdemServico ordem) {
+        this.ordemServico = ordem;
     }
 
     @NotBlank
@@ -38,12 +47,17 @@ public class OrdemServicoController implements Serializable {
     }
 
     public void setNomeCliente(String nomeCliente) {
-        //TODO: verificar se precisa fazer isso
+        this.ordemServico.getCliente().setNome(nomeCliente);
+    }
+
+    public List<OrdemServico> getOrdens() {
+        return ordens;
     }
 
     /*Métodos*/
     public void inicializar() {
         this.ordemServico = new OrdemServico();
+        this.ordens = this.ordemService.listarOrdens();
     }
 
     public void clienteSelecionado(SelectEvent<Cliente> event) {
@@ -51,11 +65,26 @@ public class OrdemServicoController implements Serializable {
         this.ordemServico.setCliente(cliente);
     }
 
-    public void salvar() {
-        this.ordemService.salvar(this.ordemServico);
-        this.messages.info("Ordem de serviço cadastrada com sucesso, para: "+ this.ordemServico.getCliente().getNome());
-        this.ordemServico = new OrdemServico();
+    public void salvarOuAtualizar() {
+        if (Objects.isNull(this.ordemServico.getId())) {
+            this.messages.info("Ordem de serviço cadastrada com sucesso para: " + this.ordemServico.getCliente().getNome());
+        } else {
+            this.messages.info("Ordem de serviço atualizada com sucesso para: "+ this.ordemServico.getCliente().getNome());
+        }
+        this.ordemService.salvarOuAtualizar(this.ordemServico);
+        this.inicializar();
     }
 
+    public void editarOrdemServico(OrdemServico ordem) {
+        this.setOrdemService(ordem);
+    }
+
+    public void limparFormulario() {
+        if (this.ordemServico.getCliente() != null || (this.ordemServico.getDataEntrada() != null
+        || this.ordemServico.getPreco() != null || this.getOrdemServico().getDescricao() != null)) {
+            this.ordemServico = new OrdemServico();
+        }
+
+    }
 
 }

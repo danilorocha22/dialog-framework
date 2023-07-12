@@ -21,15 +21,16 @@
     </servlet-mapping>-->
 
     <!--Habilitando os ícones do Primefaces-->
-    <context-param>
+    <!--<context-param>
         <param-name>primefaces.FONT_AWESOME</param-name>
         <param-value>true</param-value>
-    </context-param>
+    </context-param>-->
 
     <!--Ignorar a renderização de comentários-->
-    <context-param>
+    <!--<context-param>
         <param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
         <param-value>true</param-value>
-    </context-param>
+    </context-param>-->
+
 
 </web-app>

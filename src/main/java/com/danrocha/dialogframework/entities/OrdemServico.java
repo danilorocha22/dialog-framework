@@ -32,7 +32,6 @@ public class OrdemServico implements Serializable {
 
     @NotNull
     @PastOrPresent
-    @Temporal(TemporalType.DATE)
     @Column(nullable = false)
     private LocalDate dataEntrada;
 
@@ -54,5 +53,15 @@ public class OrdemServico implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(getId());
+    }
+
+    @Override
+    public String toString() {
+        return "OrdemServico: " +
+                "id: "+ id +
+                ", cliente=" + cliente +
+                ", dataEntrada=" + dataEntrada +
+                ", preco=" + preco +
+                ", descricao='" + descricao;
     }
 }

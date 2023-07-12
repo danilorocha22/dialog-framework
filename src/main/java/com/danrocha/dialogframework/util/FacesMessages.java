@@ -12,16 +12,40 @@ import java.io.Serializable;
 public class FacesMessages implements Serializable {
     @Serial private static final long serialVersionUID = 1L;
 
-    public void info(String msg) {
-        this.add(msg, FacesMessage.SEVERITY_INFO);
+    public void info(String mensagem) {
+        this.add(mensagem, FacesMessage.SEVERITY_INFO);
     }
 
-    public void warning(String msg) {
-        this.add(msg, FacesMessage.SEVERITY_WARN);
+    public void warn(String mensagem) {
+        this.add(mensagem, FacesMessage.SEVERITY_WARN);
     }
 
-    public void error(String msg) {
-        this.add(msg,FacesMessage.SEVERITY_ERROR);
+    public void error(String mensagem) {
+        this.add(mensagem, FacesMessage.SEVERITY_ERROR);
+    }
+
+    public void fatal(String mensagem) {
+        this.add(mensagem, FacesMessage.SEVERITY_FATAL);
+    }
+
+    public void infoSticky(String mensagem) {
+        this.sticky(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem);
+    }
+
+    public void warnSticky(String mensagem) {
+        this.sticky(FacesMessage.SEVERITY_WARN, "Aviso", mensagem);
+    }
+
+    public void errorSticky(String mensagem) {
+        this.sticky(FacesMessage.SEVERITY_ERROR, "Erro", mensagem);
+    }
+
+    public void fatalSticky(String mensagem) {
+        this.sticky(FacesMessage.SEVERITY_FATAL, "Erro Grave", mensagem);
+    }
+
+    private void sticky(Severity severity, String titulo, String mensagem) {
+        FacesContext.getCurrentInstance().addMessage("sticky-key", new FacesMessage(severity, titulo, mensagem));
     }
 
     private void add(String mensagem, Severity severity) {

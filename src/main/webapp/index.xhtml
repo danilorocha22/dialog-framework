@@ -3,67 +3,120 @@
       xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+>
 
 <h:head>
     <meta charset="UTF-8"/>
+    <h:outputStylesheet library="style" name="estilo.css"/>
+    <h:outputStylesheet library="webjars" name="primeflex/3.2.0/primeflex.min.css"/>
+    <h:outputScript name="jquery/jquery-plugins.js" library="primefaces"/>
+    <h:outputScript name="jquery/jquery.js" library="primefaces"/>
     <title>Nova Ordem de Serviço</title>
 </h:head>
 
 <h:body id="body">
     <header id="header">
         <h:graphicImage library="static" name="logo.png"/>
-        <h:outputScript name="jquery/jquery-plugins.js" library="primefaces"/>
-        <h:outputScript name="jquery/jquery.js" library="primefaces"/>
     </header>
-    <f:metadata>
-        <f:viewAction action="#{ordemServicoController.inicializar}" />
-    </f:metadata>
 
+    <f:metadata>
+        <f:viewAction action="#{ordemServicoController.inicializar}"/>
+    </f:metadata>
 
     <div id="conteudo">
         <h1>Nova Ordem de Serviço</h1>
 
-        <h:form id="form">
-            <p:messages>
+        <h:form id="formOrdem">
+            <p:growl id="growl" />
+            <!--<p:growl id="growl-sticky" for="sticky-key" showDetail="true" sticky="true" />-->
+            <!--<p:messages closable="true" showIcon="true" skipDetailIfEqualsSummary="true" styleClass="inline-block" style="width: 40%">
                 <p:autoUpdate/>
-            </p:messages>
+            </p:messages>-->
 
-            <p:panelGrid columns="2">
-                <p:outputLabel value="Cliente:" for="cliente"/>
-                <h:panelGroup>
-                    <p:inputText id="cliente" value="#{ordemServicoController.nomeCliente}" style="margin-right: 5px"
-                                 readonly="#{facesContext.currentPhaseId.name eq 'RENDER_RESPONSE'}"/>
+            <p:outputPanel id="panelFormOrdem">
+                <p:panelGrid columns="2">
+                    <p:outputLabel value="Cliente:" for="nomeCliente"/>
+                    <h:panelGroup>
+                        <p:inputText id="nomeCliente" value="#{ordemServicoController.nomeCliente}"
+                                     style="margin-right: 5px"
+                                     readonly="#{facesContext.currentPhaseId.name eq 'RENDER_RESPONSE'}"/>
 
-                    <p:commandButton icon="pi pi-search" title="Pesquisar"
-                                     styleClass="rounded-button"
-                                     actionListener="#{selecaoClienteController.abrirDialogModal}"
-                                     process="@this" update="@none">
-                        <p:ajax event="dialogReturn" listener="#{ordemServicoController.clienteSelecionado}"
-                                process="@this" update="cliente"/>
-                        <p:resetInput target="cliente"/>
-                    </p:commandButton>
-                </h:panelGroup>
+                        <p:commandButton icon="pi pi-search" title="Pesquisar"
+                                         styleClass="rounded-button"
+                                         actionListener="#{selecaoClienteController.abrirDialogModal}"
+                                         process="@this" update="@none">
+                            <p:ajax event="dialogReturn" listener="#{ordemServicoController.clienteSelecionado}"
+                                    process="@this" update="nomeCliente"/>
+                            <p:resetInput target="nomeCliente"/>
+                        </p:commandButton>
+                    </h:panelGroup>
 
-                <p:outputLabel value="Data de Entrada:" for="data-entrada"/>
-                <p:calendar id="data-entrada" size="12" pattern="dd/MM/yyyy" mask="99/99/9999"
-                            value="#{ordemServicoController.ordemServico.dataEntrada}"/>
+                    <p:outputLabel value="Data de Entrada:" for="dataEntrada"/>
+                    <p:calendar id="dataEntrada" size="12" pattern="dd/MM/yyyy" mask="99/99/9999" locale="pt_BR"
+                                value="#{ordemServicoController.ordemServico.dataEntrada}"/>
 
-                <p:outputLabel value="Preço:" for="preco"/>
-                <p:inputMask id="preco" size="12" maxlength="12"
-                             value="#{ordemServicoController.ordemServico.preco}">
-                    <f:convertNumber pattern="#,##0.00" currencySymbol="R$"/>
-                </p:inputMask>
+                    <p:outputLabel value="Preço:" for="preco"/>
+                    <p:inputMask id="preco" size="12" maxlength="12"
+                                 value="#{ordemServicoController.ordemServico.preco}">
+                        <f:convertNumber pattern="#,##0.00" currencySymbol="R$"/>
+                    </p:inputMask>
 
-                <p:outputLabel value="Descrição:" for="descricao"/>
-                <p:inputTextarea id="descricao" cols="50" rows="4"
-                                 value="#{ordemServicoController.ordemServico.descricao}"/>
+                    <p:outputLabel value="Descrição:" for="descricao"/>
+                    <p:inputTextarea id="descricao" cols="50" rows="4"
+                                     value="#{ordemServicoController.ordemServico.descricao}"/>
 
-                <p:outputLabel/>
-                <p:commandButton value="Salvar" process="@form" update="@form"
-                                 action="#{ordemServicoController.salvar}"/>
+                    <p:outputLabel/>
+                    <h:panelGroup>
+                        <p:commandButton value="Salvar" action="#{ordemServicoController.salvarOuAtualizar}"
+                                         update="@form tabelaOrdem "/>
+                        <p:spacer width="10px"/>
+                        <p:commandButton id="limparForm" value="Limpar"
+                                         styleClass="ui-button-outlined ui-button-success hover:bg-green-500 hover:text-white"
+                                         process="@this" update="@form"
+                                         action="#{ordemServicoController.limparFormulario}"/>
+                    </h:panelGroup>
 
-            </p:panelGrid>
+                </p:panelGrid>
+            </p:outputPanel>
+
+            <p:dataTable id="tabelaOrdem" size="small"
+                         value="#{ordemServicoController.ordens}" var="ordem"
+                         styleClass="mt-3" tableStyleClass="ui-responsive-table"
+                         emptyMessage="Nenhuma Ordem de Serviço disponível."
+                         paginator="true" rows="7" paginatorPosition="bottom"
+            >
+
+                <p:column headerText="Cliente" sortBy="#{ordem.cliente.nome}">
+                    <h:outputText value="#{ordem.cliente.nome}"/>
+                </p:column>
+
+                <p:column headerText="Data de Entrada" width="150px" sortBy="#{ordem.dataEntrada}">
+                    <h:outputText value="#{ordem.dataEntrada}" converter="converterData"/>
+                </p:column>
+
+                <p:column headerText="Preço" width="200px">
+                    <h:outputText value="#{ordem.preco}"/>
+                </p:column>
+
+                <p:column headerText="Descrição">
+                    <h:outputText value="#{ordem.descricao}"/>
+                </p:column>
+
+                <p:column headerText="Opções" width="150px">
+                    <p:outputPanel class="flex justify-content-center flex-wrap">
+                        <p:commandButton title="Editar" icon="pi pi-pencil"
+                                         styleClass="rounded-button ui-button-warning mr-1"
+                                         action="#{ordemServicoController.editarOrdemServico(ordem)}"
+                                         process="@this" update="@form "
+                        />
+
+                        <p:commandButton title="Excluir" icon="pi pi-trash"
+                                         styleClass="rounded-button ui-button-danger ml-1"/>
+                    </p:outputPanel>
+                </p:column>
+
+            </p:dataTable>
         </h:form>
     </div>
 </h:body>
