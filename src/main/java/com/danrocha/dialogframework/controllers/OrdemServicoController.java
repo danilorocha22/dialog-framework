@@ -55,8 +55,11 @@ public class OrdemServicoController implements Serializable {
     }
 
     /*Métodos*/
-    public void inicializar() {
+    public void novaOrdemServico() {
         this.ordemServico = new OrdemServico();
+    }
+
+    public void refreshDadosTabela() {
         this.ordens = this.ordemService.listarOrdens();
     }
 
@@ -69,22 +72,30 @@ public class OrdemServicoController implements Serializable {
         if (Objects.isNull(this.ordemServico.getId())) {
             this.messages.info("Ordem de serviço cadastrada com sucesso para: " + this.ordemServico.getCliente().getNome());
         } else {
-            this.messages.info("Ordem de serviço atualizada com sucesso para: "+ this.ordemServico.getCliente().getNome());
+            this.messages.info("Ordem de serviço atualizada com sucesso para: " + this.ordemServico.getCliente().getNome());
         }
         this.ordemService.salvarOuAtualizar(this.ordemServico);
-        this.inicializar();
+        this.novaOrdemServico();
+        this.refreshDadosTabela();
     }
 
     public void editarOrdemServico(OrdemServico ordem) {
         this.setOrdemService(ordem);
     }
 
-    public void limparFormulario() {
-        if (this.ordemServico.getCliente() != null || (this.ordemServico.getDataEntrada() != null
-        || this.ordemServico.getPreco() != null || this.getOrdemServico().getDescricao() != null)) {
-            this.ordemServico = new OrdemServico();
+    public void excluirOrdemServico(OrdemServico ordem) {
+        if (Objects.nonNull(ordem)) {
+            this.messages.info(
+                    String.format("Ordem de serviço da empresa %s, excluída com sucesso.", ordem.getCliente().getNome()));
+            this.ordemService.excluir(ordem);
+            this.refreshDadosTabela();
+        } else {
+            this.messages.warnSticky("Não foi possível excluir a ordem de serviço");
         }
+    }
 
+    public void limparFormulario() {
+        this.novaOrdemServico();
     }
 
 }

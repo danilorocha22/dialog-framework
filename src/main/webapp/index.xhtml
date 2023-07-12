@@ -21,25 +21,26 @@
     </header>
 
     <f:metadata>
-        <f:viewAction action="#{ordemServicoController.inicializar}"/>
+        <f:viewAction action="#{ordemServicoController.novaOrdemServico}"/>
+        <f:viewAction action="#{ordemServicoController.refreshDadosTabela}"/>
     </f:metadata>
 
-    <div id="conteudo">
+    <div id="conteudo" style="width: 1200px; margin: auto">
         <h1>Nova Ordem de Serviço</h1>
 
         <h:form id="formOrdem">
-            <p:growl id="growl" />
+            <p:growl id="growl"/>
             <!--<p:growl id="growl-sticky" for="sticky-key" showDetail="true" sticky="true" />-->
             <!--<p:messages closable="true" showIcon="true" skipDetailIfEqualsSummary="true" styleClass="inline-block" style="width: 40%">
                 <p:autoUpdate/>
             </p:messages>-->
 
             <p:outputPanel id="panelFormOrdem">
-                <p:panelGrid columns="2">
+                <p:panelGrid columns="2" styleClass="w-full">
                     <p:outputLabel value="Cliente:" for="nomeCliente"/>
                     <h:panelGroup>
                         <p:inputText id="nomeCliente" value="#{ordemServicoController.nomeCliente}"
-                                     style="margin-right: 5px"
+                                     styleClass="mr-2 w-26rem"
                                      readonly="#{facesContext.currentPhaseId.name eq 'RENDER_RESPONSE'}"/>
 
                         <p:commandButton icon="pi pi-search" title="Pesquisar"
@@ -53,30 +54,38 @@
                     </h:panelGroup>
 
                     <p:outputLabel value="Data de Entrada:" for="dataEntrada"/>
-                    <p:calendar id="dataEntrada" size="12" pattern="dd/MM/yyyy" mask="99/99/9999" locale="pt_BR"
-                                value="#{ordemServicoController.ordemServico.dataEntrada}"/>
+                    <p:outputPanel>
+                        <span class="ui-input-icon-right">
+                        <p:datePicker id="dataEntrada" size="12" pattern="dd/MM/yyyy" mask="99/99/9999" locale="pt_BR"
+                                      monthNavigator="true" yearNavigator="true"
+                                      value="#{ordemServicoController.ordemServico.dataEntrada}"/>
+                            <i class="pi pi-calendar"/>
+                        </span>
+                    </p:outputPanel>
 
                     <p:outputLabel value="Preço:" for="preco"/>
-                    <p:inputMask id="preco" size="12" maxlength="12"
-                                 value="#{ordemServicoController.ordemServico.preco}">
-                        <f:convertNumber pattern="#,##0.00" currencySymbol="R$"/>
-                    </p:inputMask>
+                    <p:inputNumber id="preco" size="12" maxlength="12"
+                                   symbol="R$ " symbolPosition="p"
+                                   decimalSeparator="," thousandSeparator="."
+                                   value="#{ordemServicoController.ordemServico.preco}">
+                        <!--<f:convertNumber pattern="#,##0.00" currencySymbol="R$"/>-->
+                    </p:inputNumber>
 
                     <p:outputLabel value="Descrição:" for="descricao"/>
-                    <p:inputTextarea id="descricao" cols="50" rows="4"
+                    <p:inputTextarea id="descricao" cols="55" rows="4"
                                      value="#{ordemServicoController.ordemServico.descricao}"/>
 
                     <p:outputLabel/>
                     <h:panelGroup>
-                        <p:commandButton value="Salvar" action="#{ordemServicoController.salvarOuAtualizar}"
-                                         update="@form tabelaOrdem "/>
-                        <p:spacer width="10px"/>
                         <p:commandButton id="limparForm" value="Limpar"
                                          styleClass="ui-button-outlined ui-button-success hover:bg-green-500 hover:text-white"
                                          process="@this" update="@form"
                                          action="#{ordemServicoController.limparFormulario}"/>
+                        <p:spacer width="10px"/>
+                        <p:commandButton id="salvarForm" value="Salvar"
+                                         action="#{ordemServicoController.salvarOuAtualizar}"
+                                         update="@form tabelaOrdem "/>
                     </h:panelGroup>
-
                 </p:panelGrid>
             </p:outputPanel>
 
@@ -86,17 +95,28 @@
                          emptyMessage="Nenhuma Ordem de Serviço disponível."
                          paginator="true" rows="7" paginatorPosition="bottom"
             >
+                <f:facet name="header">
+                    Ordens de Serviços
+                </f:facet>
 
-                <p:column headerText="Cliente" sortBy="#{ordem.cliente.nome}">
+                <p:column sortBy="#{ordem.cliente.nome}">
+                    <f:facet name="header">
+                        <h:outputText value="Cliente"/>
+                    </f:facet>
                     <h:outputText value="#{ordem.cliente.nome}"/>
                 </p:column>
 
-                <p:column headerText="Data de Entrada" width="150px" sortBy="#{ordem.dataEntrada}">
+                <p:column width="150px" sortBy="#{ordem.dataEntrada}">
+                    <f:facet name="header">
+                        <h:outputText value="Data de Entrada"/>
+                    </f:facet>
                     <h:outputText value="#{ordem.dataEntrada}" converter="converterData"/>
                 </p:column>
 
                 <p:column headerText="Preço" width="200px">
-                    <h:outputText value="#{ordem.preco}"/>
+                    <h:outputText value="#{ordem.preco}">
+                        <f:convertNumber pattern="#,##0.00" locale="pt_BR"/>
+                    </h:outputText>
                 </p:column>
 
                 <p:column headerText="Descrição">
@@ -106,13 +126,25 @@
                 <p:column headerText="Opções" width="150px">
                     <p:outputPanel class="flex justify-content-center flex-wrap">
                         <p:commandButton title="Editar" icon="pi pi-pencil"
-                                         styleClass="rounded-button ui-button-warning mr-1"
+                                         styleClass="rounded-button ui-button-warning "
                                          action="#{ordemServicoController.editarOrdemServico(ordem)}"
                                          process="@this" update="@form "
                         />
-
+                        <p:spacer width="10px"/>
                         <p:commandButton title="Excluir" icon="pi pi-trash"
-                                         styleClass="rounded-button ui-button-danger ml-1"/>
+                                         styleClass="rounded-button ui-button-danger"
+                                         action="#{ordemServicoController.excluirOrdemServico(ordem)}"
+                                         process="@this" update="@form">
+                            <p:confirm header="Confirme"
+                                       message="Você quer excluir este registro: #{ordem.cliente.nome} ?"
+                                       icon="pi pi-info-circle"/>
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true"
+                                         width="350">
+                            <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                            <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes"/>
+                        </p:confirmDialog>
+
                     </p:outputPanel>
                 </p:column>
 

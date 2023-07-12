@@ -17,12 +17,16 @@ public class OrdemServicoService implements Serializable {
     @Autowired
     private transient OrdemServicoRepository ordemRepo;
 
-    public void salvarOuAtualizar(OrdemServico ordem) throws NegocioException {
+    public void salvarOuAtualizar(OrdemServico ordem) {
         this.ordemRepo.saveAndFlush(ordem);
     }
 
 
     public List<OrdemServico> listarOrdens() {
         return this.ordemRepo.findAll();
+    }
+
+    public void excluir(OrdemServico ordem) {
+        this.ordemRepo.delete(ordem);
     }
 }
