@@ -2,6 +2,7 @@ package com.danrocha.dialogframework.controllers;
 
 import com.danrocha.dialogframework.entities.Cliente;
 import com.danrocha.dialogframework.entities.OrdemServico;
+import com.danrocha.dialogframework.exceptions.NegocioException;
 import com.danrocha.dialogframework.services.OrdemServicoService;
 import com.danrocha.dialogframework.util.FacesMessages;
 import jakarta.validation.constraints.NotBlank;
@@ -47,7 +48,6 @@ public class OrdemServicoController implements Serializable {
     }
 
     public void setNomeCliente(String nomeCliente) {
-        this.ordemServico.getCliente().setNome(nomeCliente);
     }
 
     public List<OrdemServico> getOrdens() {
@@ -69,14 +69,21 @@ public class OrdemServicoController implements Serializable {
     }
 
     public void salvarOuAtualizar() {
-        if (Objects.isNull(this.ordemServico.getId())) {
-            this.messages.info("Ordem de serviço cadastrada com sucesso para: " + this.ordemServico.getCliente().getNome());
-        } else {
-            this.messages.info("Ordem de serviço atualizada com sucesso para: " + this.ordemServico.getCliente().getNome());
+        try {
+            String nomeCliente = this.ordemServico.getCliente().getNome();
+            this.ordemService.salvarOuAtualizar(this.ordemServico);
+
+            if (Objects.isNull(this.ordemServico.getId())) {
+                this.messages.info("Ordem de serviço cadastrada com sucesso para: " + nomeCliente);
+            } else {
+                this.messages.info("Ordem de serviço atualizada com sucesso para: " + nomeCliente);
+            }
+
+            this.novaOrdemServico();
+            this.refreshDadosTabela();
+        } catch (NegocioException e) {
+            this.messages.errorSticky(e.getMessage());
         }
-        this.ordemService.salvarOuAtualizar(this.ordemServico);
-        this.novaOrdemServico();
-        this.refreshDadosTabela();
     }
 
     public void editarOrdemServico(OrdemServico ordem) {
@@ -84,13 +91,13 @@ public class OrdemServicoController implements Serializable {
     }
 
     public void excluirOrdemServico(OrdemServico ordem) {
-        if (Objects.nonNull(ordem)) {
-            this.messages.info(
-                    String.format("Ordem de serviço da empresa %s, excluída com sucesso.", ordem.getCliente().getNome()));
+        try {
+            String nomeCliente = ordem.getCliente().getNome();
             this.ordemService.excluir(ordem);
+            this.messages.info(String.format("Ordem de serviço da empresa %s, excluída com sucesso.", nomeCliente));
             this.refreshDadosTabela();
-        } else {
-            this.messages.warnSticky("Não foi possível excluir a ordem de serviço");
+        } catch (NegocioException e) {
+            this.messages.errorSticky(e.getMessage());
         }
     }
 
