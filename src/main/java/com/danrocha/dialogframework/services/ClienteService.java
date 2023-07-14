@@ -15,11 +15,6 @@ public class ClienteService {
 
     private ClienteRepository clienteRepo;
 
-    public Cliente clientePorId(Long id) {
-        return this.clienteRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente nao encontrado"));
-    }
-
     public List<Cliente> pesquisarClientesPeloNomeSemPaginacao(String nome) {
         return this.clienteRepo.findClientesByNomeContaining(nome);
     }
