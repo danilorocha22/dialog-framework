@@ -1,41 +1,29 @@
 <!DOCTYPE html>
-<html lang="pt-br"
-      xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+<ui:composition lang="pt-br"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="WEB-INF/template/layout.xhtml"
 >
+    <ui:define name="titulo"> Nova Ordem de Serviço </ui:define>
 
-<h:head>
-    <meta charset="UTF-8"/>
-    <h:outputStylesheet library="style" name="estilo.css"/>
-    <h:outputStylesheet library="webjars" name="primeflex/3.2.0/primeflex.min.css"/>
-    <h:outputScript name="jquery/jquery-plugins.js" library="primefaces"/>
-    <h:outputScript name="jquery/jquery.js" library="primefaces"/>
-    <title>Nova Ordem de Serviço</title>
-</h:head>
-
-<h:body id="body">
-    <header id="header">
-        <h:graphicImage library="static" name="logo.png"/>
-    </header>
-
-    <f:metadata>
-        <f:viewAction action="#{ordemServicoController.novaOrdemServico}"/>
-        <f:viewAction action="#{ordemServicoController.refreshDadosTabela}"/>
-    </f:metadata>
-
-    <div id="conteudo" style="width: 1200px; margin: auto">
-        <h1>Nova Ordem de Serviço</h1>
+    <ui:define name="conteudo">
+        <f:metadata>
+            <f:viewAction action="#{ordemServicoController.novaOrdemServico}"/>
+            <f:viewAction action="#{ordemServicoController.refreshDadosTabela}"/>
+        </f:metadata>
 
         <h:form id="formOrdem">
             <p:growl id="growl"/>
-            <p:tooltip/>
-            <!--<p:growl id="growl-sticky" for="sticky-key" showDetail="true" sticky="true" />-->
-            <!--<p:messages closable="true" showIcon="true" skipDetailIfEqualsSummary="true" styleClass="inline-block" style="width: 40%">
-                <p:autoUpdate/>
-            </p:messages>-->
+            <!--<p:tooltip globalSelector="true"/>-->
+            <p:confirmDialog global="true" responsive="true"
+                             styleClass="m-0 absolute" width="350">
+                <p:commandButton value="Não" type="button"
+                                 styleClass="ui-confirmdialog-no ui-button-flat text-color-secondary hover:bg-gray-400 hover:text-white"/>
+                <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes"/>
+            </p:confirmDialog>
 
             <p:outputPanel id="panelFormOrdem">
                 <p:panelGrid columns="2" styleClass="w-full">
@@ -45,7 +33,8 @@
                                      styleClass="mr-2 w-26rem"
                                      readonly="#{facesContext.currentPhaseId.name eq 'RENDER_RESPONSE'}"/>
 
-                        <p:commandButton icon="pi pi-search" title="Pesquisar"
+                        <p:tooltip for="pesquisar" position="top"/>
+                        <p:commandButton id="pesquisar" icon="pi pi-search" title="Pesquisar"
                                          styleClass="rounded-button"
                                          actionListener="#{selecaoClienteController.abrirDialogModal}"
                                          process="@this" update="@none">
@@ -79,7 +68,7 @@
                     <p:outputLabel/>
                     <h:panelGroup>
                         <p:commandButton id="limparForm" value="Limpar"
-                                         styleClass="ui-button-outlined ui-button-success hover:bg-green-500 hover:text-white"
+                                         styleClass="ui-button-outlined ui-button-secondary hover:bg-gray-300 hover:text-white"
                                          process="@this" update="@form"
                                          action="#{ordemServicoController.limparFormulario}"/>
                         <p:spacer width="10px"/>
@@ -92,9 +81,10 @@
 
             <p:dataTable id="tabelaOrdem" size="small"
                          value="#{ordemServicoController.ordens}" var="ordem"
-                         styleClass="mt-3" tableStyleClass="ui-responsive-table"
+                         styleClass="mt-2" tableStyleClass="ui-responsive-table"
                          emptyMessage="Nenhuma Ordem de Serviço disponível."
-                         paginator="true" rows="7" paginatorPosition="bottom"
+                         paginator="true" rows="10" paginatorPosition="bottom"
+                         lazy="true"
             >
                 <f:facet name="header">
                     Ordens de Serviços
@@ -143,18 +133,10 @@
                                        message="Você quer excluir este registro: #{ordem.cliente.nome} ?"
                                        icon="pi pi-info-circle"/>
                         </p:commandButton>
-
-                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true"
-                                         styleClass="m-0" width="350">
-                            <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
-                            <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes"/>
-                        </p:confirmDialog>
-
                     </p:outputPanel>
                 </p:column>
 
             </p:dataTable>
         </h:form>
-    </div>
-</h:body>
-</html>
+    </ui:define>
+</ui:composition>
