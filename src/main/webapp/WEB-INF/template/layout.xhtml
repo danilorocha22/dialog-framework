@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+<h:head>
+    <meta charset="UTF-8"/>
+    <h:outputStylesheet library="style" name="estilo.css"/>
+    <h:outputStylesheet library="webjars" name="primeflex/3.2.0/primeflex.min.css"/>
+    <h:outputScript name="jquery/jquery-plugins.js" library="primefaces"/>
+    <h:outputScript name="jquery/jquery.js" library="primefaces"/>
+    <title>Cadastro de Ordens de Serviço</title>
+</h:head>
+
+<h:body id="body">
+    <div class="min-h-screen relative">
+        <header id="header" class="mb-3">
+            <h:graphicImage library="static" name="logo.png" styleClass="ml-2"/>
+        </header>
+        <div class="card mx-auto " style="width: 1200px;">
+            <h2>
+                <ui:insert name="titulo"/>
+            </h2>
+
+            <div>
+                <ui:insert name="conteudo"/>
+            </div>
+        </div>
+        <p:spacer height="45px"/>
+        <footer class="card absolute bottom-0 w-full" style="background-color: #545454;">
+            <div class="flex align-content-center flex-wrap card-container">
+                <div class="flex align-items-center justify-content-center font-bold text-white">
+                    <h3 class="my-2 ml-2">DRS Tecnologias</h3>
+                </div>
+            </div>
+        </footer>
+    </div>
+</h:body>
+
+</html>
