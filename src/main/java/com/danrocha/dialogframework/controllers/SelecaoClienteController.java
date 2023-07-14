@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 
 import java.io.Serial;
@@ -89,6 +88,6 @@ public class SelecaoClienteController implements Serializable {
                 return clienteService.pesquisarClientesPeloNomeComPaginacao(getNome(), pageable).stream().toList();
             }
         };
-
     }
+
 }
