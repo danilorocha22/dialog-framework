@@ -4,6 +4,8 @@ import com.danrocha.dialogframework.entities.OrdemServico;
 import com.danrocha.dialogframework.exceptions.NegocioException;
 import com.danrocha.dialogframework.repositories.OrdemServicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.Serial;
@@ -26,8 +28,11 @@ public class OrdemServicoService implements Serializable {
     }
 
 
-    public List<OrdemServico> listarOrdens() {
-        return this.ordemRepo.findAll();
+    public Page<OrdemServico> listarOrdens(Pageable pageable) throws NegocioException {
+        if (Objects.isNull(pageable)) {
+            throw new NegocioException("Não foi possível listar as Ordens de Serviços");
+        }
+        return this.ordemRepo.findAll(pageable);
     }
 
     public void excluir(OrdemServico ordem) throws NegocioException {
@@ -35,5 +40,9 @@ public class OrdemServicoService implements Serializable {
             throw new NegocioException("Não foi possível excluir a Ordem de Serviço");
         }
         this.ordemRepo.delete(ordem);
+    }
+
+    public long count() {
+        return this.ordemRepo.count();
     }
 }

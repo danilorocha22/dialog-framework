@@ -12,7 +12,8 @@
     <ui:define name="conteudo">
         <f:metadata>
             <f:viewAction action="#{ordemServicoController.novaOrdemServico}"/>
-            <f:viewAction action="#{ordemServicoController.refreshDadosTabela}"/>
+            <f:viewAction action="#{ordemServicoController.totalRegistros}"/>
+            <!--<f:viewAction action="#{ordemServicoController.ordemModel}"/>-->
         </f:metadata>
 
         <h:form id="formOrdem">
@@ -80,7 +81,7 @@
             </p:outputPanel>
 
             <p:dataTable id="tabelaOrdem" size="small"
-                         value="#{ordemServicoController.ordens}" var="ordem"
+                         value="#{ordemServicoController.ordensModel}" var="ordem"
                          styleClass="mt-2" tableStyleClass="ui-responsive-table"
                          emptyMessage="Nenhuma Ordem de Serviço disponível."
                          paginator="true" rows="10" paginatorPosition="bottom"
@@ -90,7 +91,7 @@
                     Ordens de Serviços
                 </f:facet>
 
-                <p:column sortBy="#{ordem.cliente.nome}">
+                <p:column>
                     <f:facet name="header">
                         <h:outputText value="Cliente"/>
                     </f:facet>

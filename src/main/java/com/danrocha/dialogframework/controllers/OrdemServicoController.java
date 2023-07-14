@@ -7,13 +7,20 @@ import com.danrocha.dialogframework.services.OrdemServicoService;
 import com.danrocha.dialogframework.util.FacesMessages;
 import jakarta.validation.constraints.NotBlank;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.FilterMeta;
+import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Controller
@@ -30,7 +37,9 @@ public class OrdemServicoController implements Serializable {
     @Autowired
     private FacesMessages messages;
 
-    private List<OrdemServico> ordens;
+    private final LazyDataModel<OrdemServico> ordensModel;
+
+    private long count;
 
 
     /*Getters e Setters*/
@@ -50,17 +59,17 @@ public class OrdemServicoController implements Serializable {
     public void setNomeCliente(String nomeCliente) {
     }
 
-    public List<OrdemServico> getOrdens() {
-        return ordens;
+    public LazyDataModel<OrdemServico> getOrdensModel() {
+        return ordensModel;
+    }
+
+    public long getCount() {
+        return count;
     }
 
     /*Métodos*/
     public void novaOrdemServico() {
         this.ordemServico = new OrdemServico();
-    }
-
-    public void refreshDadosTabela() {
-        this.ordens = this.ordemService.listarOrdens();
     }
 
     public void clienteSelecionado(SelectEvent<Cliente> event) {
@@ -80,7 +89,6 @@ public class OrdemServicoController implements Serializable {
             }
 
             this.novaOrdemServico();
-            this.refreshDadosTabela();
         } catch (NegocioException e) {
             this.messages.errorSticky(e.getMessage());
         }
@@ -95,7 +103,6 @@ public class OrdemServicoController implements Serializable {
             String nomeCliente = ordem.getCliente().getNome();
             this.ordemService.excluir(ordem);
             this.messages.info(String.format("Ordem de serviço da empresa %s, excluída com sucesso.", nomeCliente));
-            this.refreshDadosTabela();
         } catch (NegocioException e) {
             this.messages.errorSticky(e.getMessage());
         }
@@ -104,5 +111,46 @@ public class OrdemServicoController implements Serializable {
     public void limparFormulario() {
         this.novaOrdemServico();
     }
+
+    public void totalRegistros() {
+        this.count = this.ordemService.count();
+    }
+
+    public OrdemServicoController() {
+        this.ordensModel = new LazyDataModel<>() {
+
+            @Override
+            public int count(Map<String, FilterMeta> filterBy) {
+                return filterBy.size();
+            }
+
+            @Override
+            public List<OrdemServico> load(int first, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
+                Pageable pageable;
+                String sortField;
+                String sortOrder;
+
+                if (sortBy.isEmpty()) {
+                    pageable = PageRequest.of((first / pageSize), pageSize);
+                } else {
+                    sortField = sortBy.keySet().toString().replaceAll("[^a-zA-Z]", "");
+                    sortOrder = getSortOrder(sortBy.get(sortField).getOrder().name());
+                    pageable = PageRequest.of((first / pageSize), pageSize, Sort.Direction.fromString(sortOrder), sortField);
+                }
+
+                setRowCount((int) getCount());
+                return ordemService.listarOrdens(pageable).stream().toList();
+            }
+        };
+    }
+
+    private String getSortOrder(String sortOrder) {
+        return switch (sortOrder) {
+            case "ASCENDING" -> "ASC";
+            case "DESCENDING" -> "DESC";
+            default -> throw new IllegalStateException("Valor inesperado: " + sortOrder);
+        };
+    }
+
 
 }
